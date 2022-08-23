@@ -40,7 +40,7 @@ def limpar_tabela():
     excluir_tudo(banco, cursor)
 
 
-def listar():
+def list_all():
     banco, cursor = criar_banco()
     verificar_tabela_existe(cursor)
     cursor.execute("select * from  Bens")
@@ -56,7 +56,7 @@ def apagar(nome):
     cursor.execute(comando)
     banco.commit()
 
-def buscar(nome):
+def get_by_name(nome):
     banco, cursor = criar_banco()
     verificar_tabela_existe(cursor)
     comando = (f"Select * from Bens where Nome like '%{nome}%'")

@@ -1,52 +1,74 @@
 import sqlite3
-import DocumentoWord
-import DocumentoExcel
+import word_document
+import excel_document
 from importlib.abc import TraversableResources
 import sqlite
 from datetime import datetime
 
+import os
+
+def get_directory():
+    current_directory = os.getcwd()
+    print (current_directory)
+    dirName = 'Contracts'
+    if not os.path.exists(dirName):
+        os.mkdir(dirName)
+        
+    new_directory = f"{current_directory}\{dirName}"
+    return new_directory
+
+
 
 def fill_contract_from_excel_file():
-    tabela = DocumentoExcel.carrega_tabela_dados()
 
-    for linha in tabela.index:
-        documento = DocumentoWord.carrega_contrato_template()
+    directory = get_directory()
 
-        referencias = DocumentoExcel.dicionario(tabela, linha)
+    table = excel_document.load_file()
 
-        for paragrafo in documento.paragraphs:
-            for codigo in referencias:
-                valor = referencias[codigo]
-                paragrafo.text = paragrafo.text.replace(codigo, valor)
+    for line in table.index:
+        document = word_document.load_template_contract()
 
-        nome_novo_documento = f"Contrato - {tabela.loc[linha,'Nome']}.docx"
-        DocumentoWord.salvar_documento(nome_novo_documento, documento)
+        references = excel_document.dictionary(table, line)
+
+        for paragraph in document.paragraphs:
+            for code in references:
+                value = references[code]
+                paragraph.text = paragraph.text.replace(code, value)
+
+        new_document = f"Contrato - {table.loc[line,'Nome']}.docx"
+        filename = f"{directory}\{new_document}"
+
+        word_document.save_document(filename, document)
 
 
 def fill_contract_from_database():
-    tabela = sqlite.listar()
 
-    for linha in tabela:
-        documento = DocumentoWord.carrega_contrato_template()
+    directory = get_directory()
 
-        referencias = dicionario(linha)
+    table = sqlite.list_all()
 
-        for paragrafo in documento.paragraphs:
-            for codigo in referencias:
-                valor = referencias[codigo]
-                paragrafo.text = paragrafo.text.replace(codigo, valor)
+    for line in table:
+        document = word_document.load_template_contract()
 
-        nome_novo_documento = f"Contrato - {linha[0]}.docx"
-        DocumentoWord.salvar_documento(nome_novo_documento, documento)
+        references = dictionary(line)
+
+        for paragraph in document.paragraphs:
+            for code in references:
+                value = references[code]
+                paragraph.text = paragraph.text.replace(code, value)
+
+        new_document = f"Contrato - {line[0]}.docx"
+        filename = f"{directory}\{new_document}"
+        word_document.save_document(filename, document)
 
 
-def dicionario(linha):
-    nome = linha[0]
-    item1 = linha[1]
-    item2 = linha[2]
-    item3 = linha[3]
+def dictionary(line):
+    nome = line[0]
+    item1 = line[1]
+    item2 = line[2]
+    item3 = line[3]
 
-    referencias = {
+    references = {
         "XXXX": nome,
         "YYYY": item1,
         "ZZZZ": item2,
@@ -55,4 +77,4 @@ def dicionario(linha):
         "MM": str(datetime.now().month),
         "AAAA": str(datetime.now().year), 
     }
-    return referencias
+    return references

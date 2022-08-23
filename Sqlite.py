@@ -29,7 +29,6 @@ def update_registro(nome,item1, item2, item3):
     banco, cursor = criar_banco()
     verificar_tabela_existe(cursor)
     comando = (f"update Bens set Nome ='{nome}', Item1 = '{item1}', Item2 ='{item2}', Item3 ='{item3}' where Nome='{nome}'")
-    print(comando)
     cursor.execute(comando)
     banco.commit()
 
@@ -45,14 +44,12 @@ def list_all():
     verificar_tabela_existe(cursor)
     cursor.execute("select * from  Bens")
     retorno = cursor.fetchall()
-    print(retorno)
     return retorno
 
 def apagar(nome):
     banco, cursor = criar_banco()
     verificar_tabela_existe(cursor)
     comando = f"delete from  Bens where Nome ='{nome}'"
-    print(comando)
     cursor.execute(comando)
     banco.commit()
 
@@ -62,16 +59,3 @@ def get_by_name(nome):
     comando = (f"Select * from Bens where Nome like '%{nome}%'")
     cursor.execute(comando)
     return cursor.fetchall()
-
-# banco, cursor = criar_banco()
-
-# verificar_tabela_existe(cursor)
-
-# insere_novo_registro(banco, cursor)
-
-# cursor.execute("select * from  Bens")
-
-# print(cursor.fetchall())
-
-# apagar('Josivaldo')
-# listar()

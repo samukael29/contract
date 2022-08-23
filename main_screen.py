@@ -1,9 +1,13 @@
+import re
 import sqlite3
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-import Sqlite
+
+#importing created objects
+import sqlite
+import contract
 
 def bind_treeview(table):
     trv.delete(*trv.get_children())
@@ -12,12 +16,12 @@ def bind_treeview(table):
 
 
 def list():
-    table = Sqlite.list_all()
+    table = sqlite.list_all()
     bind_treeview(table)
     clear_boxes()
 
 def search():
-    table = Sqlite.get_by_name(varnomesearch.get())    
+    table = sqlite.get_by_name(varnomesearch.get())    
     bind_treeview(table)
 
 def get_row_information(event):
@@ -38,27 +42,27 @@ def clear_boxes():
 
 def update_record():
     if messagebox.askyesno("Confirmation","Do you really want to update it?"):
-        Sqlite.update_registro(varnome.get(),varitem1.get(),varitem2.get(),varitem3.get())
+        sqlite.update_registro(varnome.get(),varitem1.get(),varitem2.get(),varitem3.get())
         list()
     else:
         return True
 
 def add_new_record():
-    Sqlite.criar_novo_registro(varnome.get(),varitem1.get(),varitem2.get(),varitem3.get())
+    sqlite.criar_novo_registro(varnome.get(),varitem1.get(),varitem2.get(),varitem3.get())
     list()
 
 def delete_record():
     if messagebox.askyesno("Confirmar a deleção?", "Tem certeza que deseja excluir?"):
-        Sqlite.apagar(varnome.get())
+        sqlite.apagar(varnome.get())
         list()
     else:
         return True
 
 def generate_contract_from_database():
-    return True
+        contract.fill_contract_from_database()
 
 def generate_contract_from_excel():
-    return True
+    contract.fill_contract_from_excel_file()
 
 def export_database_to_excel():
     return True

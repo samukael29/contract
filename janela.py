@@ -1,7 +1,7 @@
 import requests
 from  tkinter import ttk
 from tkinter import *
-import Sqlite
+import sqlite
 
     
 janela = Tk()
@@ -14,11 +14,11 @@ def inserir_dados():
     item1 = texto_item1.get()
     item2 = texto_item2.get()
     item3 = texto_item3.get()
-    Sqlite.criar_novo_registro(nome,item1,item2, item3)
+    sqlite.criar_novo_registro(nome,item1,item2, item3)
     limpar_tela()
 
 def popular_tree():
-    tabela = Sqlite.listar()
+    tabela = sqlite.listar()
     i = 0
     for linha in tabela:
         tree.insert('',i,text="",values=(linha[0],linha[1],linha[2],linha[3]))
@@ -36,7 +36,7 @@ def limpar_tela():
     texto_resposta['text'] = "Dados inseridos com sucesso"
 
 def limpar_tabela():
-    Sqlite.limpar_tabela()
+    sqlite.limpar_tabela()
 
 def sair_tela():
     janela.destroy()

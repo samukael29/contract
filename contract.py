@@ -2,11 +2,11 @@ import sqlite3
 import DocumentoWord
 import DocumentoExcel
 from importlib.abc import TraversableResources
-import Sqlite
+import sqlite
 from datetime import datetime
 
 
-def gerar_contrato_excel():
+def fill_contract_from_excel_file():
     tabela = DocumentoExcel.carrega_tabela_dados()
 
     for linha in tabela.index:
@@ -23,8 +23,8 @@ def gerar_contrato_excel():
         DocumentoWord.salvar_documento(nome_novo_documento, documento)
 
 
-def gerar_contrato_banco():
-    tabela = Sqlite.listar()
+def fill_contract_from_database():
+    tabela = sqlite.listar()
 
     for linha in tabela:
         documento = DocumentoWord.carrega_contrato_template()
@@ -56,5 +56,3 @@ def dicionario(linha):
         "AAAA": str(datetime.now().year), 
     }
     return referencias
-
-# gerar_contrato_banco()

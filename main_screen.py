@@ -1,3 +1,4 @@
+from asyncio import subprocess
 import re
 import sqlite3
 from tkinter import *
@@ -8,6 +9,7 @@ from tkinter import messagebox
 #importing created objects
 import sqlite
 import contract
+import excel_document
 
 def bind_treeview(table):
     trv.delete(*trv.get_children())
@@ -21,39 +23,54 @@ def list():
     clear_boxes()
 
 def search():
-    table = sqlite.get_by_name(varnomesearch.get())    
+    table = sqlite.get_by_name(varSearch.get())    
     bind_treeview(table)
 
 def get_row_information(event):
     rowid = trv.identify_row(event.y)
     selected_item = trv.item(trv.focus())
-    varnome.set(selected_item['values'][0])
-    varitem1.set(selected_item['values'][1])
-    varitem2.set(selected_item['values'][2])
-    varitem3.set(selected_item['values'][3])
-
+    i = 0
+    for element in header:
+        variable = f"var{element}" 
+        command = f"{variable}.set(selected_item['values'][{i}])"
+        exec(command)
+        i = i + 1
 
 def clear_boxes():
-    varnome.set("")
-    varnomesearch.set("")
-    varitem1.set("")
-    varitem2.set("")
-    varitem3.set("")
+    for element in header:
+        variable = f"var{element}" 
+        command = f"{variable}.set('')"
+        exec(command)
+ 
+def generate_paramethers_get():
+    paramethers = ""   
+    i = 1
+    for element in header:    
+        paramethers = paramethers + f"var{element}.get()"
+        if(i < len(header)):
+            paramethers = paramethers + ","
+        i =i+1
+
+    return paramethers
 
 def update_record():
     if messagebox.askyesno("Confirmation","Do you really want to update it?"):
-        sqlite.update_registro(varnome.get(),varitem1.get(),varitem2.get(),varitem3.get())
+        result = generate_paramethers_get()
+        command = f"sqlite.update_registro({result})"
+        print(command)
+        exec(command)
         list()
     else:
         return True
 
 def add_new_record():
-    sqlite.criar_novo_registro(varnome.get(),varitem1.get(),varitem2.get(),varitem3.get())
+    result = generate_paramethers_get()
+    command = f"sqlite.criar_novo_registro({result})"
     list()
 
 def delete_record():
     if messagebox.askyesno("Confirmar a deleção?", "Tem certeza que deseja excluir?"):
-        sqlite.apagar(varnome.get())
+        # sqlite.apagar(varnome.get())
         list()
     else:
         return True
@@ -65,7 +82,8 @@ def generate_contract_from_excel():
     contract.fill_contract_from_excel_file()
 
 def export_database_to_excel():
-    return True
+    table = sqlite.list_all()
+    excel_document.create_file(table,header)
 
 
 
@@ -78,11 +96,13 @@ root.geometry("800x700")
 
 
 #declare general variables
-varnome = StringVar()
-varnomesearch = StringVar()
-varitem1 = StringVar()
-varitem2 = StringVar()
-varitem3 = StringVar()
+header = ['Nome','Item1','Item2','Item3']
+varSearch = StringVar()
+
+for element in header:
+    var = f"var{element}"
+    command = f"var{element} = StringVar()"
+    exec(command)
 
 
 #creating wappers
@@ -100,11 +120,8 @@ wrapper3.pack(fill="both", expand="yes", padx=20, pady=10)
 #adding items to Wrapper1
 trv = ttk.Treeview(wrapper1,columns=(1,2,3,4),show="headings",height="6")
 trv.pack()
-
-trv.heading(1,text="Nome")
-trv.heading(2,text="Item1")
-trv.heading(3,text="Item2")
-trv.heading(4,text="Item3")
+for i, element in enumerate(header):
+    trv.heading(i+1,text=f"{element}")
 trv.bind('<Double 1>',get_row_information)
 list() #populating treeview
 
@@ -113,7 +130,7 @@ list() #populating treeview
 lblsearch = Label(wrapper2,text="Search")
 lblsearch.pack(side=tk.LEFT, padx=10)
 
-entsearch = Entry(wrapper2,textvariable=varnomesearch)
+entsearch = Entry(wrapper2,textvariable=varSearch)
 entsearch.pack(side=tk.LEFT,padx=6)
 
 btnsearch = Button(wrapper2, text="Search", command=search)
@@ -124,26 +141,20 @@ btnclear.pack(side=tk.LEFT,padx=6)
 
 
 #adding items to Wrapper3
-lbl1 = Label(wrapper3, text="Nome")
-lbl1.grid(row=0,column=0,padx=5,pady=3)
-ent1 = Entry(wrapper3,textvariable=varnome)
-ent1.grid(row=0,column=1,padx=5,pady=3)
+for i, element in enumerate(header):
 
-lbl2 = Label(wrapper3, text="Item1")
-lbl2.grid(row=1,column=0,padx=5,pady=3)
-ent2 = Entry(wrapper3,textvariable=varitem1)
-ent2.grid(row=1,column=1,padx=5,pady=3)
+    label = f"lbl{element}" 
+    label = Label(wrapper3, text=f"{element}")
+    label.grid(row=i,column=0,padx=5,pady=3)
 
-lbl3 = Label(wrapper3, text="Item2")
-lbl3.grid(row=2,column=0,padx=5,pady=3)
-ent3 = Entry(wrapper3,textvariable=varitem2)
-ent3.grid(row=2,column=1,padx=5,pady=3)
+    entry = f"ent{element}"
+    textvariable = f"var{element}"
+    command = f"{entry} = Entry(wrapper3,textvariable={textvariable})"
+    exec(command)
+    command =f"{entry}.grid(row={i},column=1,padx=5,pady=3)"
+    exec(command)
 
-lbl4 = Label(wrapper3, text="Item3")
-lbl4.grid(row=3,column=0,padx=5,pady=3)
-ent4 = Entry(wrapper3,textvariable=varitem3)
-ent4.grid(row=3,column=1,padx=5,pady=3)
-
+    
 up_btn = Button(wrapper3, text="Update", command=update_record)
 up_btn.grid(row=4,column=0,padx=5,pady=3)
 

@@ -5,6 +5,8 @@ from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter.messagebox import showinfo
+from webbrowser import get
 
 #importing created objects
 import sqlite
@@ -57,16 +59,22 @@ def update_record():
     if messagebox.askyesno("Confirmation","Do you really want to update it?"):
         result = generate_paramethers_get()
         command = f"sqlite.update_registro({result})"
-        print(command)
         exec(command)
         list()
     else:
         return True
 
 def add_new_record():
-    result = generate_paramethers_get()
-    command = f"sqlite.criar_novo_registro({result})"
-    list()
+    if(selected_value.get()== 'Database'):
+        result = generate_paramethers_get()
+        command = f"sqlite.criar_novo_registro({result})"
+        exec(command)
+        list()
+    else: 
+        return True
+
+
+
 
 def delete_record():
     if messagebox.askyesno("Confirmar a deleção?", "Tem certeza que deseja excluir?"):
@@ -112,6 +120,9 @@ wrapper1.pack(fill="both", expand="yes", padx=20, pady=10)
 wrapper2 = ttk.Labelframe(root, text="Search")
 wrapper2.pack(fill="both", expand="yes", padx=20, pady=10)
 
+wrapper4 = ttk.Labelframe(root, text="Where do you want to save the information?")
+wrapper4.pack(fill="both", expand="yes", padx=20, pady=10)
+
 wrapper3 = ttk.Labelframe(root, text="Customer Data")
 wrapper3.pack(fill="both", expand="yes", padx=20, pady=10)
 
@@ -154,24 +165,55 @@ for i, element in enumerate(header):
     command =f"{entry}.grid(row={i},column=1,padx=5,pady=3)"
     exec(command)
 
-    
+
+#adding items to Wrapper4
+#creating radiobutton
+
+selected_value = tk.StringVar()
+values = (('Database', 'DataBase'),
+         ('Excel File', 'Excel'))
+
+grid_column = 0
+for value in values:
+    radiobutton = ttk.Radiobutton(
+        wrapper4,
+        text=value[0],
+        value=value[1],
+        variable=selected_value
+    )
+    radiobutton.grid(column=grid_column, row=0, ipadx=10, ipady=10)
+    grid_column += 1
+
+selected_value.set('DataBase')
+
+def show_selected_value():
+    showinfo(
+        title='Result',
+        message=selected_value.get()
+    )
+
+btndisplaymessage = Button(wrapper4,text="Get Selected Size",command=show_selected_value)
+btndisplaymessage.grid(row=1,column=7,padx=5,pady=3)
+
+
+#creating buttons
 up_btn = Button(wrapper3, text="Update", command=update_record)
-up_btn.grid(row=4,column=0,padx=5,pady=3)
+up_btn.grid(row=0,column=7,padx=5,pady=3)
 
 add_btn = Button(wrapper3, text="Add New", command=add_new_record)
-add_btn.grid(row=4,column=1,padx=5,pady=3)
+add_btn.grid(row=1,column=7,padx=5,pady=3)
 
 delete_btn = Button(wrapper3, text="Delete", command=delete_record)
-delete_btn.grid(row=4,column=2,padx=5,pady=3)
+delete_btn.grid(row=2,column=7,padx=5,pady=3)
 
 
 btn_generate_contract_from_database = Button(wrapper3, text="Generate contract from database", command=generate_contract_from_database)
-btn_generate_contract_from_database.grid(row=0,column=6,padx=5,pady=3)
+btn_generate_contract_from_database.grid(row=0,column=8,padx=5,pady=3)
 
 btn_generate_contract_from_excel = Button(wrapper3, text="Generate contract from excel", command=generate_contract_from_excel)
-btn_generate_contract_from_excel.grid(row=1,column=6,padx=5,pady=3)
+btn_generate_contract_from_excel.grid(row=1,column=8,padx=5,pady=3)
 
 btn_export_database_to_excel = Button(wrapper3, text="Export database to excel", command=export_database_to_excel)
-btn_export_database_to_excel.grid(row=2,column=6,padx=5,pady=3)
+btn_export_database_to_excel.grid(row=2,column=8,padx=5,pady=3)
 
 root.mainloop()

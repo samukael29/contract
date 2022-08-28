@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter.messagebox import showinfo
+from turtle import window_height
 from webbrowser import get
 
 #importing created objects
@@ -104,7 +105,7 @@ root.geometry("800x700")
 
 
 #declare general variables
-header = ['Nome','Item1','Item2','Item3']
+header = sqlite.list_table_fields("Bens")
 varSearch = StringVar()
 
 for element in header:
@@ -114,16 +115,26 @@ for element in header:
 
 
 #creating wappers
-wrapper1 = ttk.Labelframe(root, text="Customer List")
+
+tabControl = ttk.Notebook(root)
+
+tab1 = ttk.Frame(tabControl)
+tab2 = ttk.Frame(tabControl)
+
+tabControl.add(tab1, text ='Tab 1')
+tabControl.add(tab2, text ='Tab 2')
+tabControl.pack(expand = 1, fill ="both")
+
+wrapper1 = ttk.Labelframe(tab1, text="Customer List")
 wrapper1.pack(fill="both", expand="yes", padx=20, pady=10)
 
-wrapper2 = ttk.Labelframe(root, text="Search")
+wrapper2 = ttk.Labelframe(tab1, text="Search")
 wrapper2.pack(fill="both", expand="yes", padx=20, pady=10)
 
-wrapper4 = ttk.Labelframe(root, text="Where do you want to save the information?")
+wrapper4 = ttk.Labelframe(tab1, text="Where do you want to save the information?")
 wrapper4.pack(fill="both", expand="yes", padx=20, pady=10)
 
-wrapper3 = ttk.Labelframe(root, text="Customer Data")
+wrapper3 = ttk.Labelframe(tab1, text="Customer Data")
 wrapper3.pack(fill="both", expand="yes", padx=20, pady=10)
 
 
@@ -193,7 +204,7 @@ def show_selected_value():
     )
 
 btndisplaymessage = Button(wrapper4,text="Get Selected Size",command=show_selected_value)
-btndisplaymessage.grid(row=1,column=7,padx=5,pady=3)
+btndisplaymessage.grid(row=0,column=7,padx=5,pady=3)
 
 
 #creating buttons

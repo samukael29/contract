@@ -19,7 +19,7 @@ def string_to_create_table():
         if(i < len(table_dictionary)):
             string_fields_in_line = string_fields_in_line + ","
         i =i+1
-    create_string = f"create table Bens ({string_fields_in_line})"
+    create_string = f"create table {tablename} ({string_fields_in_line})"
 
 
 def verificar_tabela_existe(cursor):
@@ -30,7 +30,7 @@ def verificar_tabela_existe(cursor):
 
 
 def excluir_tudo(banco, cursor):
-    cursor.execute("Delete from Bens")
+    cursor.execute(f"Delete from {tablename}")
     banco.commit()
 
 
@@ -43,14 +43,14 @@ def criar_banco():
 def criar_novo_registro(nome,item1, item2, item3):
     banco, cursor = criar_banco()
     verificar_tabela_existe(cursor)
-    comando = (f"Insert into Bens values ('{nome}', '{item1}','{item2}','{item3}')")
+    comando = (f"Insert into {tablename} values ('{nome}', '{item1}','{item2}','{item3}')")
     cursor.execute(comando)
     banco.commit()
 
 def update_registro(nome,item1, item2, item3):
     banco, cursor = criar_banco()
     verificar_tabela_existe(cursor)
-    comando = (f"update Bens set Nome ='{nome}', Item1 = '{item1}', Item2 ='{item2}', Item3 ='{item3}' where Nome='{nome}'")
+    comando = (f"update {tablename} set Nome ='{nome}', Item1 = '{item1}', Item2 ='{item2}', Item3 ='{item3}' where Nome='{nome}'")
     cursor.execute(comando)
     banco.commit()
 
@@ -71,14 +71,14 @@ def list_all():
 def apagar(nome):
     banco, cursor = criar_banco()
     verificar_tabela_existe(cursor)
-    comando = f"delete from  Bens where Nome ='{nome}'"
+    comando = f"delete from  {tablename} where Nome ='{nome}'"
     cursor.execute(comando)
     banco.commit()
 
 def get_by_name(nome):
     banco, cursor = criar_banco()
     verificar_tabela_existe(cursor)
-    comando = (f"Select * from Bens where Nome like '%{nome}%'")
+    comando = (f"Select * from {tablename} where Nome like '%{nome}%'")
     cursor.execute(comando)
     return cursor.fetchall()
 

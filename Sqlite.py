@@ -1,4 +1,6 @@
 import sqlite3
+from unicodedata import name
+from unittest import result
 
 #variables
 databasename = "Banco.db"
@@ -24,81 +26,101 @@ def string_to_create_table():
 
 
 
-def verificar_tabela_existe(cursor):
+def verify_if_table_exists(cursor):
     listOfTables = cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{tablename}'").fetchall()
     if listOfTables == []:
         cursor.execute(string_to_create_table())
 
-
-def excluir_tudo(banco, cursor):
-    cursor.execute(f"Delete from {tablename}")
-    banco.commit()
-
-
-def criar_banco():
+def create_database():
     banco = sqlite3.connect(f"{databasename}")
     cursor = banco.cursor()
     return banco,cursor
 
 
-def criar_novo_registro(value):
-    banco, cursor = criar_banco()
-    verificar_tabela_existe(cursor)
-    fields = list_table_fields_with_commas("Bens")
-    comando = (f"Insert into {tablename} ({fields}) values ({value})")
-    cursor.execute(comando)
+def new_record(values):
+    banco, cursor = create_database()
+    verify_if_table_exists(cursor)
+
+    line = ""
+    fields = ""
+    i = 0
+    for field in list_table_fields():
+        if(str({field})!= str("{'Id'}")):
+            fields = fields + f"{field}"
+            line = line + f"'{values[i]}'"
+            if(i < len(list_table_fields())-1):
+                fields = fields + ","                
+                line = line + ","
+        i=i+1
+
+    command = (f"Insert into {tablename} ({fields}) values ({line})")
+    cursor.execute(command)
     banco.commit()
 
-def update_registro(nome,item1, item2, item3):
-    banco, cursor = criar_banco()
-    verificar_tabela_existe(cursor)
-    comando = (f"update {tablename} set Nome ='{nome}', Item1 = '{item1}', Item2 ='{item2}', Item3 ='{item3}' where Nome='{nome}'")
-    cursor.execute(comando)
+def update_record(values):
+    banco, cursor = create_database()
+    verify_if_table_exists(cursor)
+
+    line = ""
+    i = 0
+    for field in list_table_fields():
+        if(str({field})== str("{'Id'}")):
+            line_id = f"{field} = {values[i]}" 
+        else:    
+            line = line + f"{field} = '{values[i]}'"
+            if(i < len(list_table_fields())-1):
+                line = line + ","
+        i=i+1
+
+    command = f"update {tablename} set {line} where {line_id}"  
+    cursor.execute(command)
     banco.commit()
 
 
-def limpar_tabela():
-    banco, cursor = criar_banco()
-    verificar_tabela_existe(cursor)
-    excluir_tudo(banco, cursor)
+def search_record(value):
+    banco, cursor = create_database()
+    verify_if_table_exists(cursor)
 
+    line = ""
+    i = 0
+    for field in list_table_fields():
+        line = line + f"{field} like '%{value}%'"
+        if(i < len(list_table_fields())-1):
+            line = line + "or "
+        i=i+1
+
+    command = f"select * from {tablename} where {line}"  
+    cursor.execute(command)
+    result = cursor.fetchall()
+    return result
 
 def list_all():
-    banco, cursor = criar_banco()
-    verificar_tabela_existe(cursor)
+    banco, cursor = create_database()
+    verify_if_table_exists(cursor)
     cursor.execute(f"select * from {tablename}")
     retorno = cursor.fetchall()
     return retorno
 
-def apagar(nome):
-    banco, cursor = criar_banco()
-    verificar_tabela_existe(cursor)
-    comando = f"delete from  {tablename} where Nome ='{nome}'"
-    cursor.execute(comando)
+def delete_record(values):
+    banco, cursor = create_database()
+    verify_if_table_exists(cursor)
+
+    line = ""
+    table_columns = ""
+    i = 0
+    for field in list_table_fields():
+        if(str({field})== str("{'Id'}")):
+            table_columns = field
+            line = values[i]
+
+    command = f"delete from  {tablename} where {table_columns} = {line}"
+    cursor.execute(command)
     banco.commit()
 
-def get_by_name(nome):
-    banco, cursor = criar_banco()
-    verificar_tabela_existe(cursor)
-    comando = (f"Select * from {tablename} where Nome like '%{nome}%'")
-    cursor.execute(comando)
-    return cursor.fetchall()
 
-def list_table_fields(tablename):
-    banco, cursor = criar_banco()
-    verificar_tabela_existe(cursor)
+def list_table_fields():
+    banco, cursor = create_database()
+    verify_if_table_exists(cursor)
     cursor.execute(f"select * from {tablename}")
     names = [description[0] for description in cursor.description]
     return names
-
-def list_table_fields_with_commas(tablename):
-    fields = "" 
-    i = 1
-    list_of_fields = list_table_fields("Bens")
-    for element in list_of_fields:    
-        if(str({element})!= str("{'Id'}")):
-            fields = fields + element
-            if(i < len(table_dictionary)-1):
-                fields = fields + ","
-            i =i+1
-    return fields

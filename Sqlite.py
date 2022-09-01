@@ -1,7 +1,7 @@
 import sqlite3
 
 #variables
-databasename = "banco.db"
+databasename = "Banco.db"
 tablename =  "Bens"
 table_dictionary = {
     'Id':'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -19,13 +19,14 @@ def string_to_create_table():
         if(i < len(table_dictionary)):
             string_fields_in_line = string_fields_in_line + ","
         i =i+1
-    create_string = f"create table {tablename} ({string_fields_in_line})"
+    created_string = f"create table {tablename} ({string_fields_in_line})"
+    return created_string
+
 
 
 def verificar_tabela_existe(cursor):
     listOfTables = cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{tablename}'").fetchall()
     if listOfTables == []:
-        # cursor.execute("create table Bens (Nome text, Item1 text, Item2 text, Item3 text)")
         cursor.execute(string_to_create_table())
 
 
@@ -40,10 +41,11 @@ def criar_banco():
     return banco,cursor
 
 
-def criar_novo_registro(nome,item1, item2, item3):
+def criar_novo_registro(value):
     banco, cursor = criar_banco()
     verificar_tabela_existe(cursor)
-    comando = (f"Insert into {tablename} values ('{nome}', '{item1}','{item2}','{item3}')")
+    fields = list_table_fields_with_commas("Bens")
+    comando = (f"Insert into {tablename} ({fields}) values ({value})")
     cursor.execute(comando)
     banco.commit()
 
@@ -89,3 +91,14 @@ def list_table_fields(tablename):
     names = [description[0] for description in cursor.description]
     return names
 
+def list_table_fields_with_commas(tablename):
+    fields = "" 
+    i = 1
+    list_of_fields = list_table_fields("Bens")
+    for element in list_of_fields:    
+        if(str({element})!= str("{'Id'}")):
+            fields = fields + element
+            if(i < len(table_dictionary)-1):
+                fields = fields + ","
+            i =i+1
+    return fields

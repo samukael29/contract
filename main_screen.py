@@ -46,13 +46,17 @@ def clear_boxes():
         exec(command)
  
 def generate_paramethers_get():
-    paramethers = ""   
+    paramethers = "" 
     i = 1
     for element in header:    
-        paramethers = paramethers + f"var{element}.get()"
-        if(i < len(header)):
-            paramethers = paramethers + ","
-        i =i+1
+        if(str({element})!= str("{'Id'}")):
+            command1 =  f"var{element}.get()"
+            command2 =  f'result = {command1}'
+            exec(command2,globals())
+            paramethers = paramethers + f"'{result}'"
+            if(i < len(header)-1):
+                paramethers = paramethers + ","
+            i =i+1
 
     return paramethers
 
@@ -66,10 +70,9 @@ def update_record():
         return True
 
 def add_new_record():
-    if(selected_value.get()== 'Database'):
+    if(selected_value.get()== "DataBase"):
         result = generate_paramethers_get()
-        command = f"sqlite.criar_novo_registro({result})"
-        exec(command)
+        sqlite.criar_novo_registro(result)
         list()
     else: 
         return True
@@ -140,7 +143,7 @@ wrapper3.pack(fill="both", expand="yes", padx=20, pady=10)
 
 
 #adding items to Wrapper1
-trv = ttk.Treeview(wrapper1,columns=(1,2,3,4),show="headings",height="6")
+trv = ttk.Treeview(wrapper1,columns=(1,2,3,4,5),show="headings",height="6")
 trv.pack()
 for i, element in enumerate(header):
     trv.heading(i+1,text=f"{element}")
@@ -164,17 +167,17 @@ btnclear.pack(side=tk.LEFT,padx=6)
 
 #adding items to Wrapper3
 for i, element in enumerate(header):
+    if(str({element})!= str("{'Id'}")):
+        label = f"lbl{element}" 
+        label = Label(wrapper3, text=f"{element}")
+        label.grid(row=i,column=0,padx=5,pady=3)
 
-    label = f"lbl{element}" 
-    label = Label(wrapper3, text=f"{element}")
-    label.grid(row=i,column=0,padx=5,pady=3)
-
-    entry = f"ent{element}"
-    textvariable = f"var{element}"
-    command = f"{entry} = Entry(wrapper3,textvariable={textvariable})"
-    exec(command)
-    command =f"{entry}.grid(row={i},column=1,padx=5,pady=3)"
-    exec(command)
+        entry = f"ent{element}"
+        textvariable = f"var{element}"
+        command = f"{entry} = Entry(wrapper3,textvariable={textvariable})"
+        exec(command)
+        command =f"{entry}.grid(row={i},column=1,padx=5,pady=3)"
+        exec(command)
 
 
 #adding items to Wrapper4

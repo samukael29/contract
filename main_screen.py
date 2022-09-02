@@ -17,8 +17,16 @@ import excel_document
 
 def bind_treeview(table):
     trv.delete(*trv.get_children())
-    for i in table:
-        trv.insert('','end',values=i)
+    if (selected_value.get() == "AllRegisters"):
+        for i in table:
+            trv.insert('','end',values=i)
+    else: 
+        if (selected_value.get() == "OnlyFirstFour"):
+            x=1
+            for i in table:
+                if(x <=4):
+                    trv.insert('','end',values=i)
+                x=x+1
 
 
 def list():
@@ -30,6 +38,11 @@ def list():
 def search():
     table = sqlite.search_record(varSearch.get())    
     bind_treeview(table)
+
+def selected_value_radio():
+    list()
+    # showinfo(title='valor escolhido',message=f"o valor escolhido foi: {selected_value.get()}")
+
 
 def get_row_information(event):
     rowid = trv.identify_row(event.y)
@@ -111,8 +124,15 @@ root.geometry("1200x700")
 
 #declare general variables
 header = sqlite.list_table_fields()
+
 varSearch = StringVar()
 varSearch.trace("w", lambda name, index, mode, varSearch=varSearch: search())
+
+selected_value = StringVar()
+selected_value.trace("w", lambda name, index, mode, selected_value=selected_value: selected_value_radio())
+
+values = (('Show all registers', 'AllRegisters'),
+         ('Show only first four registers', 'OnlyFirstFour'))
 
 for element in header:
     var = f"var{element}"
@@ -123,24 +143,20 @@ for element in header:
 #creating wappers
 tabControl = ttk.Notebook(root)
 
-tab1 = ttk.Frame(tabControl)
-tab2 = ttk.Frame(tabControl)
+tab_database = ttk.Frame(tabControl)
+tab_excel = ttk.Frame(tabControl)
 
-tabControl.add(tab1, text ='Tab 1')
-tabControl.add(tab2, text ='Tab 2')
+tabControl.add(tab_database, text ='DataBase')
+tabControl.add(tab_excel, text ='Excel')
 tabControl.pack(expand = 1, fill ="both")
 
-wrapper2 = ttk.Labelframe(tab1, text="Search")
+wrapper2 = ttk.Labelframe(tab_database, text="Search")
 wrapper2.pack(fill="both", expand="yes", padx=20, pady=10)
 
-wrapper1 = ttk.Labelframe(tab1, text="Customer List")
+wrapper1 = ttk.Labelframe(tab_database, text="Customer List")
 wrapper1.pack(fill="both", expand="yes", padx=20, pady=10)
 
-
-wrapper4 = ttk.Labelframe(tab1, text="Where do you want to save the information?")
-wrapper4.pack(fill="both", expand="yes", padx=20, pady=10)
-
-wrapper3 = ttk.Labelframe(tab1, text="Customer Data")
+wrapper3 = ttk.Labelframe(tab_database, text="Customer Data")
 wrapper3.pack(fill="both", expand="yes", padx=20, pady=10)
 
 
@@ -152,9 +168,25 @@ wrapper3.pack(fill="both", expand="yes", padx=20, pady=10)
 # entsearch = Entry(wrapper1,textvariable=varSearch)
 # entsearch.pack(side=tk.LEFT,padx=6)
 
-lblsearch = Label(wrapper2,text="Type to search").place(x=5, y=0)
+lblsearch = Label(wrapper2,text="Type to search")
+lblsearch.grid(row=0,column=0)
+entsearch = Entry(wrapper2,textvariable=varSearch,width=100)
+entsearch.grid(row=0,column=1)
 
-entsearch = Entry(wrapper2,textvariable=varSearch,width=100).place(x=100, y=0)
+#creating radiobutton
+grid_column = 0
+for value in values:
+    radiobutton = ttk.Radiobutton(
+        wrapper2,
+        text=value[0],
+        value=value[1],
+        variable=selected_value
+    )
+    radiobutton.grid(column=grid_column, row=1)
+    grid_column += 1
+selected_value.set('AllRegisters')
+
+
 
 trv = ttk.Treeview(wrapper1,columns=(1,2,3,4,5),show="headings",height="6")
 trv.pack()
@@ -181,35 +213,6 @@ for i, element in enumerate(header):
         command =f"{entry}.grid(row={i-1},column=1,padx=5,pady=3)"
         exec(command)
 
-
-#adding items to Wrapper4
-#creating radiobutton
-
-selected_value = tk.StringVar()
-values = (('Database', 'DataBase'),
-         ('Excel File', 'Excel'))
-
-grid_column = 0
-for value in values:
-    radiobutton = ttk.Radiobutton(
-        wrapper4,
-        text=value[0],
-        value=value[1],
-        variable=selected_value
-    )
-    radiobutton.grid(column=grid_column, row=0, ipadx=10, ipady=10)
-    grid_column += 1
-
-selected_value.set('DataBase')
-
-def show_selected_value():
-    showinfo(
-        title='Result',
-        message=selected_value.get()
-    )
-
-btndisplaymessage = Button(wrapper4,text="Get Selected Size",command=show_selected_value)
-btndisplaymessage.grid(row=0,column=7,padx=5,pady=3)
 
 
 #creating buttons

@@ -3,7 +3,7 @@ from unicodedata import name
 from unittest import result
 
 #variables
-databasename = "Banco.db"
+databasename = "Database.db"
 tablename =  "Bens"
 table_dictionary = {
     'Id':'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -32,13 +32,13 @@ def verify_if_table_exists(cursor):
         cursor.execute(string_to_create_table())
 
 def create_database():
-    banco = sqlite3.connect(f"{databasename}")
-    cursor = banco.cursor()
-    return banco,cursor
+    database = sqlite3.connect(f"{databasename}")
+    cursor = database.cursor()
+    return database,cursor
 
 
 def new_record(values):
-    banco, cursor = create_database()
+    database, cursor = create_database()
     verify_if_table_exists(cursor)
 
     line = ""
@@ -55,10 +55,10 @@ def new_record(values):
 
     command = (f"Insert into {tablename} ({fields}) values ({line})")
     cursor.execute(command)
-    banco.commit()
+    database.commit()
 
 def update_record(values):
-    banco, cursor = create_database()
+    database, cursor = create_database()
     verify_if_table_exists(cursor)
 
     line = ""
@@ -74,11 +74,11 @@ def update_record(values):
 
     command = f"update {tablename} set {line} where {line_id}"  
     cursor.execute(command)
-    banco.commit()
+    database.commit()
 
 
 def search_record(value):
-    banco, cursor = create_database()
+    database, cursor = create_database()
     verify_if_table_exists(cursor)
 
     line = ""
@@ -95,14 +95,14 @@ def search_record(value):
     return result
 
 def list_all():
-    banco, cursor = create_database()
+    database, cursor = create_database()
     verify_if_table_exists(cursor)
     cursor.execute(f"select * from {tablename}")
     retorno = cursor.fetchall()
     return retorno
 
 def delete_record(values):
-    banco, cursor = create_database()
+    database, cursor = create_database()
     verify_if_table_exists(cursor)
 
     line = ""
@@ -115,11 +115,11 @@ def delete_record(values):
 
     command = f"delete from  {tablename} where {table_columns} = {line}"
     cursor.execute(command)
-    banco.commit()
+    database.commit()
 
 
 def list_table_fields():
-    banco, cursor = create_database()
+    database, cursor = create_database()
     verify_if_table_exists(cursor)
     cursor.execute(f"select * from {tablename}")
     names = [description[0] for description in cursor.description]

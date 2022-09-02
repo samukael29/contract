@@ -103,9 +103,6 @@ def export_database_to_excel():
     excel_document.create_file(table,header)
 
 
-
-
-
 #Creating the screen
 root = Tk()
 root.title("My Application")
@@ -124,7 +121,6 @@ for element in header:
 
 
 #creating wappers
-
 tabControl = ttk.Notebook(root)
 
 tab1 = ttk.Frame(tabControl)

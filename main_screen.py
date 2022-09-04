@@ -95,6 +95,15 @@ def add_new_record():
         showinfo(title='Campo(s) em branco',message="Um ou mais campos estão em branco. Você deve preencher todos os campos para salvar")
     list()
 
+def save_to_spreadsheet():
+    result,empty_value = get_values()
+    if(empty_value == 0):
+        excel_document.adding_information_to_excel_file(header,result)
+    else:
+        showinfo(title='Campo(s) em branco',message="Um ou mais campos estão em branco. Você deve preencher todos os campos para salvar")
+    list()
+
+
 
 def delete_record():
     result,empty_value = get_values()
@@ -160,14 +169,6 @@ wrapper3 = ttk.Labelframe(tab_database, text="Customer Data")
 wrapper3.pack(fill="both", expand="yes", padx=20, pady=10)
 
 
-
-#adding items to Wrapper1
-# lblsearch = Label(wrapper1,text="Type to search:")
-# lblsearch.pack(side=tk.LEFT, padx=10)
-
-# entsearch = Entry(wrapper1,textvariable=varSearch)
-# entsearch.pack(side=tk.LEFT,padx=6)
-
 lblsearch = Label(wrapper2,text="Type to search")
 lblsearch.grid(row=0,column=0)
 entsearch = Entry(wrapper2,textvariable=varSearch,width=100)
@@ -196,7 +197,6 @@ trv.bind('<Double 1>',get_row_information)
 list() #populating treeview
 
 
-#adding items to Wrapper2
 
 
 #adding items to Wrapper3
@@ -234,5 +234,9 @@ btn_generate_contract_from_excel.grid(row=1,column=8,padx=5,pady=3)
 
 btn_export_database_to_excel = Button(wrapper3, text="Export database to excel", command=export_database_to_excel)
 btn_export_database_to_excel.grid(row=2,column=8,padx=5,pady=3)
+
+btn_save_to_spreadsheet = Button(wrapper3, text="Export database to excel", command=save_to_spreadsheet)
+btn_save_to_spreadsheet.grid(row=3,column=8,padx=5,pady=3)
+
 
 root.mainloop()

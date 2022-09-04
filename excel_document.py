@@ -44,6 +44,30 @@ def create_file(table,header):
     #salvar arquivo
     book.save('dados.xlsx')
 
-# create_file()
 
+def save_spreadsheet(dataframe):
+    writer = pd.ExcelWriter('demo.xlsx', engine='xlsxwriter')
+    dataframe.to_excel(writer, sheet_name='Sheet1', index=True)
+    writer.save()
 
+def adding_information_to_excel_file(header,values):
+    
+    dataframe = pd.DataFrame()
+    row = ""
+    i =0
+    for item in header:
+        if(str({item})!= str("{'Id'}")):
+            row = row + f"{item} : ['{values[i]}']"
+            if(i < len(header)-1):
+                row = row + ","
+        i=i+1
+    
+    print(row)
+    dataframe.
+    print(dataframe)
+
+    
+    # dataframe = pd.DataFrame({'Name': ['Samuel', 'Judite', 'Genoveva', 'Cleidiane'],
+    #                 'Age': [40, 50, 60, 70]})
+
+    # save_spreadsheet(dataframe)

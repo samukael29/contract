@@ -52,22 +52,22 @@ def save_spreadsheet(dataframe):
 
 def adding_information_to_excel_file(header,values):
     
-    dataframe = pd.DataFrame()
-    row = ""
+    dictionary = {}
     i =0
     for item in header:
         if(str({item})!= str("{'Id'}")):
-            row = row + f"{item} : ['{values[i]}']"
-            if(i < len(header)-1):
-                row = row + ","
+            dictionary.setdefault(item,values[i])
         i=i+1
-    
-    print(row)
-    dataframe.
-    print(dataframe)
+    dataframe = pd.DataFrame([dictionary])
 
-    
-    # dataframe = pd.DataFrame({'Name': ['Samuel', 'Judite', 'Genoveva', 'Cleidiane'],
-    #                 'Age': [40, 50, 60, 70]})
+    print(dictionary)
+    i =0
+    for item in header:
+        if(str({item})!= str("{'Id'}")):
+            dictionary.update(item,f"{values[i]}+{values[i]}")
+        i=i+1
+     
+    print(dictionary)
+    #  dataframe.append([dictionary])
 
     # save_spreadsheet(dataframe)

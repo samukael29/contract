@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import openpyxl
+import os
+from openpyxl import load_workbook
 
 def load_file():
     table = pd.read_excel("Informações.xlsx")
@@ -50,7 +52,7 @@ def save_spreadsheet(dataframe):
     dataframe.to_excel(writer, sheet_name='Sheet1', index=True)
     writer.save()
 
-def adding_information_to_excel_file(header,values):
+def adding_information_to_excel_file1(header,values):
     
     dictionary = {}
     i =0
@@ -58,16 +60,49 @@ def adding_information_to_excel_file(header,values):
         if(str({item})!= str("{'Id'}")):
             dictionary.setdefault(item,values[i])
         i=i+1
-    dataframe = pd.DataFrame([dictionary])
+    source_dataframe = pd.DataFrame([dictionary])
 
     print(dictionary)
+    dictionary1 = {}
     i =0
     for item in header:
         if(str({item})!= str("{'Id'}")):
-            dictionary.update(item,f"{values[i]}+{values[i]}")
+            dictionary1.setdefault(item,f"{values[i]}+{values[i]}")
         i=i+1
      
-    print(dictionary)
-    #  dataframe.append([dictionary])
+    print(dictionary1)
+    new_line_dataframe = pd.DataFrame([dictionary1])
+    pd.concat(source_dataframe,new_line_dataframe)
+    print(dataframe)
 
     # save_spreadsheet(dataframe)
+
+def adding_information_to_excel_file(header,values):
+    
+    workbook_name = 'sample.xlsx'
+    id = 0
+    if (os.path.exists(workbook_name)):
+        wb = load_workbook(workbook_name)
+        page = wb.active
+        id = (page.max_row)
+    else:
+        wb = openpyxl.Workbook()
+        page = wb.active
+        page.title = 'companies'
+        page.append(header)
+        id = 1
+    
+    values[0] = id
+    page.append(values)
+
+    wb.save(filename=workbook_name)
+
+def testfile():
+    workbook_name = 'sample.xlsx'
+    id = 0
+    if (os.path.exists(workbook_name)):
+        wb = load_workbook(workbook_name)
+        page = wb.active
+        id = (page.max_row) - 1
+
+# testfile()
